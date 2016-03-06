@@ -17,6 +17,7 @@
 import pipes
 import re
 import shlex
+import sys
 
 class Cmd:
     """Represents a command line invocation."""
@@ -152,6 +153,11 @@ class CmdList(list):
         See Cmd.remove for a description.
         """
         self.replace(args, "", regex, order)
+
+    def dump_sh(self, fp = sys.stdout):
+        """Dump the commands in form of a shell script to fp"""
+        for c in self:
+            fp.write(str(c) + "\n")
 
 def parse(path):
     """Parse a file that contains command line invocations.
