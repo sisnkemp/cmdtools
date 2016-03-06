@@ -22,9 +22,12 @@ import sys
 class Cmd(list):
     """Represents a command line invocation."""
 
-    def __init__(self, line):
+    def __init__(self, line = None):
         """Constructs a Cmd from the string `line`."""
-        self[:] = shlex.split(line)
+        if line:
+            self[:] = shlex.split(line)
+        else:
+            self[:] = []
 
     def __str__(self):
         s = ""
@@ -129,6 +132,16 @@ class Cmd(list):
         for i in range(0, len(self)):
             self[i] = re.sub(pattern, repl, self[i])
 
+    def common_prefix(self, c):
+        """This returns the longest common prefix of c and self"""
+        end = min(len(self), len(c))
+        cmd = Cmd()
+        for i in range(0, end):
+            if self[i] == c[i]:
+                cmd.append(self[i])
+        return cmd
+
+
 class CmdList(list):
     """Represents a list of commands."""
 
@@ -158,6 +171,18 @@ class CmdList(list):
         """Dump the commands in form of a shell script to fp"""
         for c in self:
             fp.write(str(c) + "\n")
+
+    def common_prefix(self):
+        """Returns the common prefix for all commands as a Cmd."""
+        if len(self) == 0:
+            return []
+        elif len(self) == 1:
+            return self[0]
+
+        prefix = self[0]
+        for i in range(1, len(self)):
+            prefix = self[i].common_prefix(prefix)
+        return prefix
 
 def parse(path):
     """Parse a file that contains command line invocations.
