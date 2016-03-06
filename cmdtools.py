@@ -35,6 +35,22 @@ class Cmd:
     def __repr__(self):
         return "'" + self.__str__() + "'"
 
+    def contains(self, arg, regex = False):
+        """Check if Cmd contains an argument
+
+        The argument can be a regular expression.
+        If found, the first matching argument of the command is returned.
+        """
+        if regex == False:
+            arg = re.compile(re.escape(arg))
+        else:
+            arg = re.compile(arg)
+
+        for c in self.cmd:
+            if arg.match(c):
+                return c
+        return ""
+
     # TODO: Implement a generic map function to turn one
     # list of arguments into another, and implement all other
     # operations on top of this?
