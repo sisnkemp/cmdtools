@@ -19,17 +19,17 @@ import re
 import shlex
 import sys
 
-class Cmd:
+class Cmd(list):
     """Represents a command line invocation."""
 
     def __init__(self, line):
         """Constructs a Cmd from the string `line`."""
-        self.cmd = shlex.split(line)
+        self[:] = shlex.split(line)
 
     def __str__(self):
         s = ""
         sep = ""
-        for arg in self.cmd:
+        for arg in self:
             s += sep + pipes.quote(arg)
             sep = " "
         return s
@@ -48,7 +48,7 @@ class Cmd:
         else:
             arg = re.compile(arg)
 
-        for c in self.cmd:
+        for c in self:
             if arg.match(c):
                 return c
         return ""
@@ -87,8 +87,8 @@ class Cmd:
         newcmd = []
         start = 0
         j = 0
-        for i in range(0, len(self.cmd)):
-            c = self.cmd[i]
+        for i in range(0, len(self)):
+            c = self[i]
 
             if order == True:
                 if j == 0:
@@ -101,7 +101,7 @@ class Cmd:
                         j = 0
                 else:
                     for k in range(start, i + 1):
-                        newcmd.append(self.cmd[k])
+                        newcmd.append(self[k])
             else:
                 replace = False
                 for arg in args:
@@ -115,7 +115,7 @@ class Cmd:
 
             i += 1
 
-        self.cmd = newcmd
+        self[:] = newcmd
 
     def remove(self, args, regex = False, order = True):
         """Remove arguments from Cmd.
@@ -126,8 +126,8 @@ class Cmd:
 
     def sub(self, pattern, repl):
         """Remove arguments that match pattern by reply in Cmd"""
-        for i in range(0, len(self.cmd)):
-            self.cmd[i] = re.sub(pattern, repl, self.cmd[i])
+        for i in range(0, len(self)):
+            self[i] = re.sub(pattern, repl, self[i])
 
 class CmdList(list):
     """Represents a list of commands."""
