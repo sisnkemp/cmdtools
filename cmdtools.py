@@ -150,8 +150,7 @@ class CmdList(list):
         This calls remove for every command.
         See Cmd.remove for a description.
         """
-        for c in self:
-            c.remove(args, regex, order)
+        self.replace(args, "", regex, order)
 
 def parse(path):
     """Parse a file that contains command line invocations.
