@@ -122,17 +122,18 @@ class Cmd:
         """
         self.replace(args, "", regex, order)
 
+    def sub(self, pattern, repl):
+        """Remove arguments that match pattern by reply in Cmd"""
+        for i in range(0, len(self.cmd)):
+            self.cmd[i] = re.sub(pattern, repl, self.cmd[i])
+
 class CmdList(list):
     """Represents a list of commands."""
 
-    def remove(self, args, regex = False, order = True):
-        """Remove arguments from Cmds in CmdList.
-
-        This calls remove for every command.
-        See Cmd.remove for a description.
-        """
+    def sub(self, pattern, repl):
+        """Substitute arguments in Cmds of CmdList."""
         for c in self:
-            c.remove(args, regex, order)
+            c.sub(pattern, repl)
 
     def replace(self, args, newargs, regex = False, order = True):
         """Replace arguments in Cmds of CmdList.
@@ -142,6 +143,15 @@ class CmdList(list):
         """
         for c in self:
             c.replace(args, newargs, regex, order)
+
+    def remove(self, args, regex = False, order = True):
+        """Remove arguments from Cmds in CmdList.
+
+        This calls remove for every command.
+        See Cmd.remove for a description.
+        """
+        for c in self:
+            c.remove(args, regex, order)
 
 def parse(path):
     """Parse a file that contains command line invocations.
