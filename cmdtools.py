@@ -16,11 +16,11 @@
 
 import shlex
 
-class Command:
+class Cmd:
     """Represents a command line invocation."""
 
     def __init__(self, line):
-        """Constructs a Command from the string `line`."""
+        """Constructs a Cmd from the string `line`."""
         self.cmd = shlex.split(line)
 
     def __str__(self):
@@ -41,7 +41,7 @@ def parse(path):
     A predicate function could be used later to filter out
     unwanted lines from the file.
 
-    Returns a list of Commands.
+    Returns a list of Cmds.
     """
 
     cmds = []
@@ -51,6 +51,6 @@ def parse(path):
         if len(line) == 0 or line[0] == '#':
             continue
 
-        cmds.append(Command(line))
+        cmds.append(Cmd(line))
     fp.close()
     return cmds
