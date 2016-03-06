@@ -14,6 +14,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+import pipes
 import re
 import shlex
 
@@ -28,7 +29,7 @@ class Cmd:
         s = ""
         sep = ""
         for arg in self.cmd:
-            s += sep + arg
+            s += sep + pipes.quote(arg)
             sep = " "
         return s
 
