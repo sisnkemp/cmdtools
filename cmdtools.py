@@ -14,6 +14,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+import re
 import shlex
 
 class Cmd:
@@ -34,8 +35,97 @@ class Cmd:
     def __repr__(self):
         return "'" + self.__str__() + "'"
 
+    # TODO: Implement a generic map function to turn one
+    # list of arguments into another, and implement all other
+    # operations on top of this?
+
+    def replace(self, args, newargs, regex = False, order = True):
+        """Replace arguments from Cmd.
+
+        args: a string, list of strings are set of strings
+        newargs: a string or list of strings
+        regex: whether the strings in args are to be
+        interpreted as regular expressions
+        order: When true, args must match in exactly the given
+        order in the command.
+        """
+        if not args:
+            return
+
+        if not newargs:
+            newargs = []
+        elif not isinstance(newargs, list):
+            newargs = [ newargs ]
+        if isinstance(args, str):
+            args = [ args ]
+
+        tmp = []
+        for arg in args:
+            if regex == False:
+               arg = re.escape(arg)
+            tmp.append(re.compile(arg))
+        args = tmp
+
+        newcmd = []
+        start = 0
+        j = 0
+        for i in range(0, len(self.cmd)):
+            c = self.cmd[i]
+
+            if order == True:
+                if j == 0:
+                    start = i
+                arg = args[j]
+                if arg.match(c):
+                    j += 1
+                    if j == len(args):
+                        newcmd.extend(newargs)
+                        j = 0
+                else:
+                    for k in range(start, i + 1):
+                        newcmd.append(self.cmd[k])
+            else:
+                replace = False
+                for arg in args:
+                    if arg.match(c):
+                        replace = True
+                        break
+                if replace:
+                    newcmd.extend(newargs)
+                else:
+                    newcmd.append(c)
+
+            i += 1
+
+        self.cmd = newcmd
+
+    def remove(self, args, regex = False, order = True):
+        """Remove arguments from Cmd.
+
+        This is equal to replace(self, args, "", regex, order)
+        """
+        self.replace(args, "", regex, order)
+
 class CmdList(list):
     """Represents a list of commands."""
+
+    def remove(self, args, regex = False, order = True):
+        """Remove arguments from Cmds in CmdList.
+
+        This calls remove for every command.
+        See Cmd.remove for a description.
+        """
+        for c in self:
+            c.remove(args, regex, order)
+
+    def replace(self, args, newargs, regex = False, order = True):
+        """Replace arguments in Cmds of CmdList.
+
+        This calls replace for every command.
+        See Cmd.replace for a description.
+        """
+        for c in self:
+            c.replace(args, newargs, regex, order)
 
 def parse(path):
     """Parse a file that contains command line invocations.
