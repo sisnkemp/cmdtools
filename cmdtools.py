@@ -33,12 +33,17 @@ class Cmd(list):
         s = ""
         sep = ""
         for arg in self:
-            s += sep + pipes.quote(arg)
+            s += sep + arg
             sep = " "
         return s
 
     def __repr__(self):
         return "'" + self.__str__() + "'"
+
+    def quote(self):
+        """Quote all arguments for the shell"""
+        for i in range(0, len(self)):
+            self[i] = pipes.quote(self[i])
 
     def contains(self, arg, regex = False):
         """Check if Cmd contains an argument
@@ -183,6 +188,11 @@ class CmdList(list):
         for i in range(1, len(self)):
             prefix = self[i].common_prefix(prefix)
         return prefix
+
+    def quote(self):
+        """See Cmd.quote"""
+        for c in self:
+            c.quote()
 
 def parse(path):
     """Parse a file that contains command line invocations.
