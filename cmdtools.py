@@ -34,6 +34,9 @@ class Cmd:
     def __repr__(self):
         return "'" + self.__str__() + "'"
 
+class CmdList(list):
+    """Represents a list of commands."""
+
 def parse(path):
     """Parse a file that contains command line invocations.
 
@@ -44,7 +47,7 @@ def parse(path):
     Returns a list of Cmds.
     """
 
-    cmds = []
+    cmds = CmdList()
     fp = open(path, "r")
     for line in fp:
         line = line.strip()
